@@ -10,6 +10,7 @@ export class Boot extends Scene {
     this.load.image('player', 'assets/player.png');
     this.load.image('enemy', 'assets/enemy.png');
     this.load.image('zombie', 'assets/zombie.png');
+    this.load.image('missile', 'assets/missile.png');
   }
 
   create() {
