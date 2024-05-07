@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import Zombie from '../objects/Zombie';
 
+
 export class Game extends Scene {
   balls = null; // Inicializa balls como null
   zombies = null;
