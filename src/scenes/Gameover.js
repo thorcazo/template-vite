@@ -17,7 +17,7 @@ export class GameOver extends Phaser.Scene {
     restartButton.setInteractive();
 
     restartButton.on('pointerup', () => {
-      this.scene.start('MainMenu');
+      this.scene.start('Game');
     });
   }
 }
