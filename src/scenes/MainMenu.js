@@ -1,9 +1,13 @@
 import { Scene } from 'phaser';
-
+import { Enemy } from '../objects/Enemy';  // Asegúrate de que la ruta es correcta
 export class MainMenu extends Scene {
   balls = null; // Inicializa balls como null
   enemies = null;
   enemyCount = 0;
+
+
+  /* Array de palabras para asignar al Enemy */
+  words = ['apple', 'grape', 'lemon', 'melon', 'berry', 'peach', 'plum', 'kiwi', 'lime', 'pear'];  // Lista de palabras
 
 
   constructor() {
@@ -20,16 +24,12 @@ export class MainMenu extends Scene {
     /* Implementar escena UI */
     this.scene.launch('UI');
 
-
-
-
-
-
-
     this.player = this.physics.add.image(200, window.innerHeight / 2, 'player');
 
     /* Crear un grupo de enemigos */
-    this.enemies = this.physics.add.group();
+    this.enemies = this.physics.add.group({
+      classType: Enemy // Define la clase que se usará para los enemigos
+    });
 
     /* Crear un nuevo temporizador que añade nuevos eneigos */
     this.time.addEvent({
@@ -63,8 +63,7 @@ export class MainMenu extends Scene {
 
 
       /* Calcula la direccion entre el "player" y el "enemy" más cercano */
-      let direction = new Phaser.Math.Vector2(closestEnemy.x - this.player.x, closestEnemy.y - this.player.y).normalize();
-
+      let direction = new Phaser.Math.Vector2((closestEnemy.x) - this.player.x, closestEnemy.y - this.player.y).normalize();
 
       // Usa esta dirección para establecer la velocidad de la "ball"
       ball.setVelocity(direction.x * 1000, direction.y * 1000);
@@ -123,12 +122,15 @@ export class MainMenu extends Scene {
 
 
   addEnemy() {
-    const enemy = this.physics.add.image(window.innerWidth - 80, Math.random() * window.innerHeight, 'enemy');
-    enemy.setImmovable(true);
+    const x = window.innerWidth - 80;
+    const y = Math.random() * window.innerHeight;
+
+    const randomWord = this.words[Math.floor(Math.random() * this.words.length)];  // Seleccionar una palabra al azar
+
+
+    const enemy = new Enemy(this, x, y, randomWord); // Usa la clase Enemy
     this.enemies.add(enemy);
-
     enemy.setVelocityX(-100);
-
   }
 
 
