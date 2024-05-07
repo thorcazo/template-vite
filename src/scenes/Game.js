@@ -1,9 +1,12 @@
 import { Scene } from 'phaser';
+import Zombie from '../objects/Zombie';
 
 export class Game extends Scene {
   balls = null; // Inicializa balls como null
   enemies = null;
   enemyCount = 0;
+
+  zombies = null;
 
 
   constructor() {
@@ -19,12 +22,6 @@ export class Game extends Scene {
   create() {
     /* Implementar escena UI */
     this.scene.launch('UI');
-
-
-
-
-
-
 
     this.player = this.physics.add.image(200, window.innerHeight / 2, 'player');
 
@@ -64,7 +61,8 @@ export class Game extends Scene {
 
       /* Calcula la direccion entre el "player" y el "enemy" más cercano */
       let direction = new Phaser.Math.Vector2(closestEnemy.x - this.player.x, closestEnemy.y - this.player.y).normalize();
-
+      const rotation = direction.angle(); // Usa esta dirección para establecer la rotación de la "ball"
+      console.log(rotation);
 
       // Usa esta dirección para establecer la velocidad de la "ball"
       ball.setVelocity(direction.x * 1000, direction.y * 1000);
@@ -74,7 +72,39 @@ export class Game extends Scene {
     });
 
     this.cursors = this.input.keyboard.createCursorKeys();
-  }
+
+
+    /* Añadir zombies a el grupo zombies */
+    this.zombies = this.add.group({
+      classType: Zombie,
+      runChildUpdate: true // Hace que el método update de la clase Zombie se ejecute
+    })
+
+    /* Añadir un nuevo en esquna superior y inferior */
+
+
+    // random positioned zombie
+    this.zombies.get(
+      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, 500),
+      'zombie'
+    )
+    this.zombies.get(
+      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, 500),
+      'zombie'
+    )
+
+    // set each zombie's target to be the player
+    this.zombies.children.each(child => {
+      const zombie = child
+      zombie.setTarget(this.player)
+    })
+
+
+
+
+  } // FINISH CREATE
 
   update(time, delta) {
     /* añadir movimiento a "player" -> "up" y "down" */
@@ -82,6 +112,10 @@ export class Game extends Scene {
       this.player.y += 5;
     } else if (this.cursors.up.isDown) {
       this.player.y -= 5;
+    } else if (this.cursors.left.isDown) {
+      this.player.x -= 5;
+    } else if (this.cursors.right.isDown) {
+      this.player.x += 5;
     }
 
     // Si la bola está fuera de la vista del mundo, hazla invisible
@@ -122,14 +156,14 @@ export class Game extends Scene {
   }
 
 
-  addEnemy() {
-    const enemy = this.physics.add.image(window.innerWidth - 80, Math.random() * window.innerHeight, 'enemy');
-    enemy.setImmovable(true);
-    this.enemies.add(enemy);
+  // addEnemy() {
+  //   const enemy = this.physics.add.image(window.innerWidth - 80, Math.random() * window.innerHeight, 'enemy');
+  //   enemy.setImmovable(true);
+  //   this.enemies.add(enemy);
 
-    enemy.setVelocityX(-100);
+  //   enemy.setVelocityX(-100);
 
-  }
+  // }
 
 
 }
