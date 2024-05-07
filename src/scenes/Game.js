@@ -22,6 +22,7 @@ export class Game extends Scene {
     this.player = this.physics.add.image(200, window.innerHeight / 2, 'player');
     this.currentLetter = '';
     this.wordProgress = {}; // Para rastrear la progresión de las palabras de cada zombie
+    this.currentLetterText = this.add.text(500, 20, '', { fontSize: '32px', fill: '#fff' });
 
     this.missiles = this.physics.add.group({
       classType: Missile,
@@ -44,7 +45,7 @@ export class Game extends Scene {
 
     this.spawnZombie();
     this.time.addEvent({
-      delay: 10000,
+      delay: 2000,
       callback: this.spawnZombie,
       callbackScope: this,
       loop: true
@@ -68,6 +69,8 @@ export class Game extends Scene {
       let progress = this.wordProgress[zombie.id] || 0;
       if (missile.letterIndex === progress) {
         progress++;  // Incrementa el progreso
+        this.wordProgress[zombie.id] = progress;
+        this.currentLetterText.setText('Next letter: ' + (progress < zombie.word.length ? zombie.word.charAt(progress) : 'Zombie defeated!'));
         zombie.vida -= 1;
 
         if(zombie.vida <= 3){
@@ -145,10 +148,12 @@ export class Game extends Scene {
 
     // Obtiene la palabra y la progresión actual para el zombie más cercano
     let word = closestZombie.word;
+    console.log("Palabra: ", word);
     let progress = this.wordProgress[closestZombie.id] || 0;
-    this.fireMissile(closestZombie, progress);
-
+    console.log("Progreso: ", progresds);
+    
     if (event.key === word.charAt(progress)) {
+      this.fireMissile(closestZombie, progress);
       console.log("Letra correcta: ", event.key);
       this.currentLetter = event.key;
     }
