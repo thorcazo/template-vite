@@ -5,12 +5,15 @@ export default class Zombie extends Phaser.GameObjects.Sprite implements IZombie
   private word: string
   private wordText: Phaser.GameObjects.Text;
 
+  private static idCounter = 0;
+  public id: number;
+
+
   words: string[] = ['apple', 'banana', 'cherry', 'grape', 'lemon', 'melon', 'orange', 'peach', 'pear', 'plum'];
 
-  
-  
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, word: string) {
     super(scene, x, y, texture);
+    this.id = Zombie.idCounter++;
     this.scene.physics.world.enable(this) // Habilitar física para el zombie
     this.word = this.setWord();
     this.wordText = this.scene.add.text(0, 0, this.word, { fontSize: '16px', color: '#000' });

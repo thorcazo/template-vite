@@ -15,21 +15,60 @@ export class UI extends Scene {
       this.score.setText(points);
     });
 
-
-    const { width, height } = this.scale;
-    const restartButton = this.add.text(window.innerWidth - 100, 25,  'MissileScene', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5);
+    const pause = this.add.text(500, 25, 'Pause', {
+      fontSize: '24px',
+      fill: '#fff',
+      backgroundColor: '#000',
+      padding: { left: 10, right: 10, top: 10, bottom: 10 },
+      fontStyle: 'bold',
+      stroke: '#000',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 2,
+        offsetY: 2,
+        color: '#000',
+        blur: 2,
+        stroke: true,
+        fill: true
+      }
+    }).setOrigin(0.5);
     /* Se utiliza para convertir un objeto interactivo y el jugador pueda interactuar con el. */
-    restartButton.setInteractive();
+    pause.setInteractive();
 
-    restartButton.on('pointerup', () => {
-      this.scene.start('MissileScene');
+    pause.on('pointerover', () => {
+      // Cambia el cursor a un puntero cuando el mouse pasa por encima
+      this.game.canvas.style.cursor = 'pointer';
+      pause.setFill('lightgrey');
     });
 
+    pause.on('pointerout', () => {
+      // Cambia el cursor de vuelta a la forma predeterminada cuando el mouse sale
+      this.game.canvas.style.cursor = 'default';
+      if (this.scene.isPaused('Game')) {
+        pause.setFill('red');
+      } else {
+        pause.setFill('white');
+      }
+    });
+
+    pause.on('pointerdown', () => {
+      // Cambia el tamaño del botón cuando se hace clic en él
+      pause.setScale(0.9);
+    });
+
+    pause.on('pointerup', () => {
+      /* pause de escena */
+      pause.setScale(1.0); // Restaura el tamaño del botón cuando se suelta el clic
+
+      if (this.scene.isPaused('Game')) {
+        this.scene.resume('Game');
+        pause.setFill('white');
+      } else {
+        this.scene.pause('Game');
+        pause.setFill('red');
+      }
+    });
+
+
   }
-
-
-
-
-
-
 }

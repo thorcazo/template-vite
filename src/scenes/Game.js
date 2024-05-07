@@ -59,14 +59,14 @@ export class Game extends Scene {
   }
 
   handleMissileZombieCollision(zombie, missile) {
-    console.log('Missile hit zombie');
     missile.destroy();  // Confirma que esto se está llamando realmente.
-    console.log(this.wordProgress);
+    console.log("Dentro de handleMissileZombieCollision: -> Zombie.id:" , zombie.id);
 
     if (zombie && zombie.word) {
+
       let progress = this.wordProgress[zombie.id] || 0;
       if (missile.letterIndex === progress) {
-        console.log('Letter match', missile.letterIndex);
+        
         progress++;  // Incrementa el progreso
         this.wordProgress[zombie.id] = progress;  // Actualiza el progreso
         if (progress === zombie.word.length) {
@@ -122,6 +122,7 @@ export class Game extends Scene {
       const y = Phaser.Math.Between(0, this.sys.game.config.height);
 
       const zombie = this.zombies.get(x, y, 'zombie');
+      console.log("Dentro de spawnZombie: -> Zombie.id:" , zombie.id);
       if (!zombie) return;
       zombie.setActive(true).setVisible(true).setTarget(this.player);
     }
