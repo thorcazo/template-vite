@@ -20,19 +20,21 @@ export class Game extends Scene {
   create() {
     this.scene.launch('UI');
     this.player = this.physics.add.image(200, window.innerHeight / 2, 'player');
+    this.currentLetter = '';
+    this.wordProgress = {}; // Para rastrear la progresión de las palabras de cada zombie
 
     this.missiles = this.physics.add.group({
       classType: Missile,
       runChildUpdate: true
     });
 
-    this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.cursors = this.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.W,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      left: Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D
+    // Función para manejar el input del teclado para las letras
+    this.input.keyboard.on('keydown', (event) => {
+      this.handleInput(event);
     });
+
+    // this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.cursors = this.input.keyboard.createCursorKeys();
 
     this.zombies = this.add.group({
       classType: Zombie,
@@ -40,7 +42,7 @@ export class Game extends Scene {
     });
 
     this.time.addEvent({
-      delay: 1000,
+      delay: 2000,
       callback: this.spawnZombie,
       callbackScope: this,
       loop: true
@@ -56,10 +58,24 @@ export class Game extends Scene {
     this.scene.launch('GameOver');
   }
 
-  handleMissileZombieCollision(missile, zombie) {
-    missile.destroy();
-    zombie.destroy(); // Esto ahora también destruirá wordText
+  handleMissileZombieCollision(zombie, missile) {
+    console.log('Missile hit zombie');
+    missile.destroy();  // Confirma que esto se está llamando realmente.
+    console.log(this.wordProgress);
+
+    if (zombie && zombie.word) {
+      let progress = this.wordProgress[zombie.id] || 0;
+      if (missile.letterIndex === progress) {
+        console.log('Letter match', missile.letterIndex);
+        progress++;  // Incrementa el progreso
+        this.wordProgress[zombie.id] = progress;  // Actualiza el progreso
+        if (progress === zombie.word.length) {
+          zombie.destroy(); // Destruye el zombie si todas las letras han sido acertadas
+        }
+      }
+    }
   }
+
 
   update(time, delta) {
     if (this.cursors.down.isDown) {
@@ -71,23 +87,20 @@ export class Game extends Scene {
     } else if (this.cursors.right.isDown) {
       this.player.x += 5;
     }
-
-    if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
-      this.fireMissile();
-    }
   }
 
-  fireMissile() {
+  // Modificado para tomar el zombie y el índice de la letra
+  fireMissile(zombie, letterIndex) {
     const missile = this.missiles.get(this.player.x, this.player.y, 'missile');
-    if (!missile) return;
-    missile.setActive(true).setVisible(true).setRotation(this.player.rotation);
-
-    let closestZombie = this.findClosestZombie();
-    if (closestZombie) {
-      missile.setTarget(closestZombie);
+    if (missile) {
+      missile.setActive(true);
+      missile.setVisible(true);
+      missile.setTarget(zombie);
+      missile.letterIndex = letterIndex; // Guarda el índice de la letra que debe ser eliminada
     }
   }
 
+  // Encuentra el zombie más cercano
   findClosestZombie() {
     let closestZombie = null;
     let minDist = Infinity;
@@ -103,14 +116,29 @@ export class Game extends Scene {
 
   // Método para generar un nuevo zombie
   spawnZombie() {
-   
+
     if (this.zombies.countActive(true) < this.maxZombies) {
-      const x = this.sys.game.config.width; 
-      const y = Phaser.Math.Between(0, this.sys.game.config.height); 
+      const x = this.sys.game.config.width;
+      const y = Phaser.Math.Between(0, this.sys.game.config.height);
 
       const zombie = this.zombies.get(x, y, 'zombie');
       if (!zombie) return;
       zombie.setActive(true).setVisible(true).setTarget(this.player);
+    }
+  }
+
+  // Función para disparar misil si la entrada es correcta
+  handleInput(event) {
+    let closestZombie = this.findClosestZombie();
+    if (!closestZombie) return;
+
+    // Obtiene la palabra y la progresión actual para el zombie más cercano
+    let word = closestZombie.word;
+    let progress = this.wordProgress[closestZombie.id] || 0;
+
+    if (event.key === word.charAt(progress)) {
+      this.currentLetter = event.key;
+      this.fireMissile(closestZombie, progress);
     }
   }
 }
