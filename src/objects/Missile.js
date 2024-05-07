@@ -27,12 +27,8 @@ export default class Missile extends Phaser.GameObjects.Container {
 
     //Determina la velocidad en la que quira el misil
     this.turnDegreesPerFrame = 3
-    this.speed = 300
+    this.speed = 3500
     this.trackMouse = false
-  }
-
-  setTrackMouse(enabled) {
-    this.trackMouse = enabled
   }
 
   update(dt) {

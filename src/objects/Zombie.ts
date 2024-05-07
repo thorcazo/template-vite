@@ -4,9 +4,11 @@ export default class Zombie extends Phaser.GameObjects.Sprite implements IZombie
   private target?: Phaser.GameObjects.Components.Transform
   private word: string
   private wordText: Phaser.GameObjects.Text;
+  private vidaText: Phaser.GameObjects.Text;
 
   private static idCounter = 0;
   public id: number;
+  public vida: number;
 
 
   words: string[] = ['apple', 'banana', 'cherry', 'grape', 'lemon', 'melon', 'orange', 'peach', 'pear', 'plum'];
@@ -16,7 +18,9 @@ export default class Zombie extends Phaser.GameObjects.Sprite implements IZombie
     this.id = Zombie.idCounter++;
     this.scene.physics.world.enable(this) // Habilitar física para el zombie
     this.word = this.setWord();
+    this.vida = this.word.length;
     this.wordText = this.scene.add.text(0, 0, this.word, { fontSize: '16px', color: '#000' });
+    this.vidaText = this.scene.add.text(0, 0, `Vida: ${this.vida.toString()}`, { fontSize: '16px', color: '#000' });
   }
 
   setTarget(target: Phaser.GameObjects.Components.Transform) {
@@ -41,6 +45,9 @@ export default class Zombie extends Phaser.GameObjects.Sprite implements IZombie
     this.wordText.x = this.x;
     this.wordText.y = this.y + this.height / 2;
 
+    this.vidaText.x = this.x;
+    this.vidaText.y = this.y + this.height / 2 + 20;
+
   }
   /* metodo para asignar una palabra rando de words */
   setWord() {
@@ -53,6 +60,7 @@ export default class Zombie extends Phaser.GameObjects.Sprite implements IZombie
   destroy(fromScene?: boolean) {
     if (this.wordText) {
       this.wordText.destroy();
+      this.vidaText.destroy();
     }
     super.destroy(fromScene);
   }

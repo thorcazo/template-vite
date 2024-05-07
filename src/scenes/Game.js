@@ -41,8 +41,10 @@ export class Game extends Scene {
       runChildUpdate: true
     });
 
+
+    this.spawnZombie();
     this.time.addEvent({
-      delay: 2000,
+      delay: 10000,
       callback: this.spawnZombie,
       callbackScope: this,
       loop: true
@@ -60,14 +62,23 @@ export class Game extends Scene {
 
   handleMissileZombieCollision(zombie, missile) {
     missile.destroy();  // Confirma que esto se está llamando realmente.
-    console.log("Dentro de handleMissileZombieCollision: -> Zombie.id:" , zombie.id);
 
     if (zombie && zombie.word) {
 
       let progress = this.wordProgress[zombie.id] || 0;
       if (missile.letterIndex === progress) {
-        
         progress++;  // Incrementa el progreso
+        zombie.vida -= 1;
+
+        if(zombie.vida <= 3){
+          /* Color amarillo */
+          zombie.setTint(0xffff00);
+        }
+
+        if (zombie.vida <= 1) {
+          zombie.setTint(0xff0000);
+        }
+        zombie.vidaText.setText(zombie.vida);
         this.wordProgress[zombie.id] = progress;  // Actualiza el progreso
         if (progress === zombie.word.length) {
           zombie.destroy(); // Destruye el zombie si todas las letras han sido acertadas
@@ -116,13 +127,12 @@ export class Game extends Scene {
 
   // Método para generar un nuevo zombie
   spawnZombie() {
-
     if (this.zombies.countActive(true) < this.maxZombies) {
       const x = this.sys.game.config.width;
       const y = Phaser.Math.Between(0, this.sys.game.config.height);
 
       const zombie = this.zombies.get(x, y, 'zombie');
-      console.log("Dentro de spawnZombie: -> Zombie.id:" , zombie.id);
+      console.log("Dentro de spawnZombie: -> Zombie.id:", zombie.id);
       if (!zombie) return;
       zombie.setActive(true).setVisible(true).setTarget(this.player);
     }
@@ -136,10 +146,11 @@ export class Game extends Scene {
     // Obtiene la palabra y la progresión actual para el zombie más cercano
     let word = closestZombie.word;
     let progress = this.wordProgress[closestZombie.id] || 0;
+    this.fireMissile(closestZombie, progress);
 
     if (event.key === word.charAt(progress)) {
+      console.log("Letra correcta: ", event.key);
       this.currentLetter = event.key;
-      this.fireMissile(closestZombie, progress);
     }
   }
 }
