@@ -1,24 +1,16 @@
 import Phaser from 'phaser'
 
-export default class Zombie extends Phaser.GameObjects.Sprite {
+export default class Enemy extends Phaser.GameObjects.Sprite {
   target = null;
   constructor(scene, x, y, texture) {
     super(scene, x, y, texture)
-
-
-    /* añadir textura "enemy" */
-    this.setTexture('enemy');
-
-
-
-
   }
 
-  setTarget(target: Phaser.GameObjects.Components.Transform) {
+  setTarget(target) {
     this.target = target
   }
 
-  update(t: number, dt: number) {
+  update(t, dt) {
     if (!this.target) {
       return
     }

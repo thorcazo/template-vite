@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import Zombie from '../objects/Zombie';
+import Enemy from '../objects/Enemy';
 
 export class Game extends Scene {
   balls = null; // Inicializa balls como null
@@ -156,14 +157,14 @@ export class Game extends Scene {
   }
 
 
-  // addEnemy() {
-  //   const enemy = this.physics.add.image(window.innerWidth - 80, Math.random() * window.innerHeight, 'enemy');
-  //   enemy.setImmovable(true);
-  //   this.enemies.add(enemy);
+  addEnemy() {
+    const enemy = this.physics.add.image(window.innerWidth - 80, Math.random() * window.innerHeight, 'enemy');
+    enemy.setImmovable(true);
+    this.enemies.add(enemy);
 
-  //   enemy.setVelocityX(-100);
+    enemy.setVelocityX(-100);
 
-  // }
+  }
 
 
 }
