@@ -4,13 +4,12 @@ export default class Missile extends Phaser.GameObjects.Container {
 
   target = null; // Añade una propiedad target a la clase Missile
 
-
-
   constructor(scene, x, y, texture) {
     super(scene, x, y)
 
     this.image = scene.add.image(0, 0, texture)
     this.image.setOrigin(1, 0.5)
+    this.image.setScale(0.5)
     this.add(this.image)
 
     scene.physics.add.existing(this)
@@ -35,8 +34,6 @@ export default class Missile extends Phaser.GameObjects.Container {
   setTrackMouse(enabled) {
     this.trackMouse = enabled
   }
-
-
 
   update(dt) {
     // Este será el objetivo del misil, si no tiene objetivo este será el centro de la pantalla
@@ -79,7 +76,6 @@ export default class Missile extends Phaser.GameObjects.Container {
     this.body.velocity.x = vx
     this.body.velocity.y = vy
   }
-
 
   // Añade un método setTarget a la clase Missile
   setTarget(target) {
