@@ -45,10 +45,13 @@ export default class Zombie extends Phaser.GameObjects.Sprite implements IZombie
   }
 
 
-  /* metodo para destruir wordText */
-  destroyWordText() {
-    if (this.wordText)
+
+
+  destroy(fromScene?: boolean) {
+    if (this.wordText) {
       this.wordText.destroy();
+    }
+    super.destroy(fromScene);
   }
 
 
